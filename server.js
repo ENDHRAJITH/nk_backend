@@ -5,7 +5,6 @@
 // =====================================================
 
 import express from 'express';
-import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { v4 as uuidv4 } from 'uuid';
