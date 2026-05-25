@@ -23,28 +23,11 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ── Middleware ───────────────────────────────────────
+// Allow all origins for now - restrict to specific domains in production
 app.use(cors({
-  origin: function(origin, callback) {
-    const allowedOrigins = [
-      process.env.FRONTEND_URL?.replace(/\/$/, ''),
-      'https://nk-frontend.vercel.app',
-      'http://localhost:5500',
-      'http://127.0.0.1:5500'
-    ].filter(Boolean);
-    
-    // Allow no origin (for requests like curl or mobile)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('CORS blocked'));
-    }
-  },
+  origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
-  credentials: true,
-  optionsSuccessStatus: 200
+  credentials: false
 }));
 app.use(express.json());
 
