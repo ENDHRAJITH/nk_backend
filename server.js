@@ -2,6 +2,7 @@
 // NKCOMMERCEBOOKS - Backend Server
 // Stack: Node.js + Express + Supabase + Resend
 // Deploy: Render (Free tier)
+// Version: 2.0.0 - Manual CORS headers
 // =====================================================
 
 import express from 'express';
