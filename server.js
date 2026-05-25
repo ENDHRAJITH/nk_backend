@@ -23,12 +23,15 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ── Middleware ───────────────────────────────────────
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'null' // allows file:// origin in local testing
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL,        // your Vercel URL
-    'http://localhost:5500',          // local dev (Live Server port)
-    'http://127.0.0.1:5500'
-  ],
+  origin: allowedOrigins,
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -91,7 +94,8 @@ app.post('/api/request-download', async (req, res) => {
   }
 
   // ── Build verify URL ─────────────────────────────
-  const verifyUrl = `${process.env.FRONTEND_URL}/verify.html?token=${token}`;
+  const frontendBaseUrl = process.env.FRONTEND_URL?.replace(/\/$/, '') || '';
+  const verifyUrl = `${frontendBaseUrl}/verify.html?token=${token}`;
 
   // ── Send Email via Resend ────────────────────────
   const { error: emailError } = await resend.emails.send({
