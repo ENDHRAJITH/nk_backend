@@ -23,27 +23,28 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ── Middleware ───────────────────────────────────────
-const allowedOrigins = [
-  process.env.FRONTEND_URL?.replace(/\/$/, ''), // remove trailing slash
-  'http://localhost:5500',
-  'http://127.0.0.1:5500',
-  'https://nk-frontend.vercel.app', // explicit frontend domain
-  'null' // allows file:// origin in local testing
-].filter(Boolean);
-
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL?.replace(/\/$/, ''),
+      'https://nk-frontend.vercel.app',
+      'http://localhost:5500',
+      'http://127.0.0.1:5500'
+    ].filter(Boolean);
+    
+    // Allow no origin (for requests like curl or mobile)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error('CORS policy violation'));
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('CORS blocked'));
     }
   },
-  methods: ['GET', 'POST'],
-  credentials: true
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 app.use(express.json());
 
